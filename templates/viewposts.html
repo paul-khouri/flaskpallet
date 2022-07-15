@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Viewposts Page{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content%}
+<h1> View Posts Page </h1>
+<div><h2> {{post[0]}} </h2></div>
+<div>{{ new_lines_paragraph(post[1]) }}</div>
+<div>{{ reformatSQLiteDate(post[2]) }}</div>
+<div><a href="{{ url_for('editpost', post_id=post_id) }}">Edit Post</a></div>
+<hr/>
+<h2>Comments</h2>
+{%if comments%}
+{% for comment in comments %}
+<div> Name: {{comment[0]}}</div>
+<div>{{ new_lines_paragraph(comment[1]) }}</div>
+<div><a href={{ comment[2] }} target="_blank">{{ comment[2] }}</a></div>
+<div>{{ reformatSQLiteDate(comment[3]) }}</div>
+{% endfor %}
+{% endif %}
+
+
+
+
+<p> Welcome to here</p>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Upload File Page{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content%}
+
+    <h1>Upload new File</h1>
+<h2>{{message}}</h2>
+<hr/>
+{{latest_file}}
+{% if latest_file%}
+<img src="{{ url_for('static', filename='uploadedimages/'+latest_file) }}">
+{% endif %}
+<hr/>
+{%for file in files%}
+<img src="{{ url_for('static', filename='uploadedimages/'+file) }}">
+{% endfor %}
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+{% endblock %}

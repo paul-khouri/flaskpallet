@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block title %}Edit Post{% endblock %}
+{% block head %}
+{{ super() }}
+  <style>
+  table, td {
+  border: 1px solid #d4d4d4;
+  border-collapse: collapse;
+  vertical-align: top;
+}
+table tr td:first-child{
+    text-align: right;
+}
+
+
+</style>
+{% endblock %}
+{% block content%}
+<h1> Edit Posts Page </h1>
+        <form action="/editpost/{{post_id}}" method="post">
+            <table>
+        <tr>
+            <td>Post Title:</td> <td><input type="text" name="title" value="{{title}}"></td>
+        </tr>
+        <tr>
+            <td>Post Content</td>
+            <td><textarea name="content" rows="4" cols="30">{{content}}</textarea></td>
+        </tr>
+
+
+        <tr>
+            <td>  </td>
+            <td style="text-align: right;"><a href="{{ url_for('viewpost', post_id=post_id) }}"> Cancel </a>
+<input type="reset"> <input type="submit" value="Submit"></td>
+        </tr>
+        </table>
+          </form>
+
+
+
+
+<p> Welcome to here</p>
+{% endblock %}

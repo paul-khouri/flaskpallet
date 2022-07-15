@@ -1,0 +1,10 @@
+khouripa@localadmins-MBP flask_pallet % . venv/bin/activate
+ (venv) khouripa@localadmins-MBP flask_pallet % export FLASK_ENV=development
+(venv) khouripa@localadmins-MBP flask_pallet % flask run
+
+khouripa@localadmins-MBP flask_pallet % . venv/bin/activate
+(venv) khouripa@localadmins-MBP flask_pallet % export FLASK_APP = hello
+zsh: bad assignment
+(venv) khouripa@localadmins-MBP flask_pallet % export FLASK_ENV=development
+(venv) khouripa@localadmins-MBP flask_pallet % export FLASK_APP=hello
+(venv) khouripa@localadmins-MBP flask_pallet % flask run

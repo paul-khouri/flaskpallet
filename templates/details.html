@@ -1,0 +1,15 @@
+<!doctype html>
+<title>Hello Flask Template</title>
+{%if name%}
+<h1> Hello {{name}}</h1>
+{% else %}
+<h1>No name supplied</h1>
+{% endif %}
+<ul>
+    {% if navigation %}
+    {% for href , caption in navigation %}
+    <li><a href="{{href}}"> {{caption}}</a></li>
+    {% endfor %}
+    {% endif %}
+</ul>
+{{table}}

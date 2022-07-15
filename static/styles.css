@@ -1,0 +1,97 @@
+body{
+    background-color: #eeeeee;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.alert-box{
+background-color : #ff6666;
+color: #ffff66;
+font-size: 1.5em;
+}
+
+table
+{
+	background-color: transparent;
+	border-spacing: 0;
+	border-collapse: collapse;
+	border-top: 1px solid #ddd;
+}
+
+th, td
+{
+	padding: .5em 1em;
+	vertical-align: top;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+
+.my-table{
+    width:100%;
+    table-layout: fixed;
+}
+/* ---- images ---- */
+img{
+width:100px;
+}
+
+/* ---- navigation ---- */
+nav{
+    background-color: rgba(200, 255, 255, 1);
+    transition: background-color 2s;
+    text-align: center;
+    width:100%;
+}
+
+ul{
+  list-style: none;
+  padding:0;
+  margin:0;
+ }
+
+       nav >ul li{
+        /* make the list elements run inline */
+          display: inline-block;
+          position: relative;
+      }
+      nav  >ul li  a{
+         /* make the link elements behave as blocks for styling */
+          display:inline-block;
+          padding: 1em;
+          border: 1px solid blue;
+          text-decoration: none;
+          background-color: rgb(0,255,255);
+      }
+      nav  >ul li   a:hover{
+        /* colour change for all links blocks on hover */
+        background-color: cornflowerblue;
+
+      }
+
+       /* hidden  menu items*/
+      .drop-nav{
+          position: absolute;
+          display: none;
+          width:100%;
+
+
+          border: 2px solid pink;
+          box-sizing: border-box;
+      }
+       .inner-nav li {
+        /* size the drop down elements nicely */
+        width:100%;
+      }
+      .inner-nav li a{
+        /* size the drop down elements nicely */
+        padding: 1em 0em;
+        display: block;
+        border: 0px solid black;
+        width:100%;
+        box-sizing: border-box;
+      }
+/* make visible and set background colour */
+      .drop-cover:hover .drop-nav{
+        display: block;
+        /*background-color: crimson;*/
+      }

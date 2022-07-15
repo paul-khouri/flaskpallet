@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Installer{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content%}
+{% if method=="GET" %}
+        <div class="alert-box"> Clicking the install button will reset the database.<br/>
+            Think before doing this.
+        </div>
+        <form method="post">
+            <input name="install" type="submit" value="Install"/>
+        </form>
+{% elif method=="POST" %}
+<h1> The database has been successfully recreated </h1>
+        {% for table, row_count in row_data.items() %}
+        <p>  {{table}} , {{row_count }} </p>
+        {% endfor %}
+
+{% else %}
+<h1>Page Error</h1>
+{% endif %}
+{% endblock %}
