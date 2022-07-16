@@ -48,7 +48,7 @@ def updatepassword(username, db_path):
     where username = ?
     """
     password, hash = create_pword_hash()
-    created_at = PythondateNow_toSQLiteDate()
+    created_at = pythondateNow_toSQLiteDate()
     values_tuple = (hash, created_at, username)
     run_commit_query(sql, values_tuple, db_path)
     return password
@@ -142,6 +142,7 @@ def run_search_query_tuples(sql_query,values_tuple, file_path):
     :param (path) file_path:
     :return: (tuple) result
     """
+    result = None
     try:
         db = sqlite3.connect(file_path)
         # will get multi dict rather than tuples, needs flask
@@ -249,7 +250,7 @@ def set_three(db_path):
         """
     values_tuple = ('maya', '1800-09-28 16:50:48', 'admin')
     password, hash = create_pword_hash()
-    created_at = PythondateNow_toSQLiteDate()
+    created_at = pythondateNow_toSQLiteDate()
     values_tuple = (hash, created_at, 'admin')
     run_commit_query(sql, values_tuple, db_path)
     sql = "select * from user"
@@ -267,15 +268,17 @@ if __name__ == "__main__":
     #set_two(db_path)
     #set_three(db_path)
     #print(updatepassword('admin', db_path))
-    sql = "select * from user"
-    field_list = ('id', 'username', 'password', 'created_at', 'is_enabled')
-    result = run_search_query(sql, db_path)
-    print(result)
-    sql = 'select * from sqlite_master;'
-    result = run_search_query(sql, db_path)
-    #print(result)
-    table = generateHTMLtable(result[1:], result[0])
-    print(table)
+    # sql = "select * from user"
+    # field_list = ('id', 'username', 'password', 'created_at', 'is_enabled')
+    # result = run_search_query(sql, db_path)
+    # print(result)
+    # sql = 'select * from sqlite_master;'
+    # result = run_search_query(sql, db_path)
+    # #print(result)
+    # table = generateHTMLtable(result[1:], result[0])
+    # print(table)
+
+
 
 
 

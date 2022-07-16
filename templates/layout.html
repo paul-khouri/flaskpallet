@@ -10,6 +10,7 @@
         <nav>
             <ul>
             <li><a href="{{ url_for('index') }}"> Index </a></li>
+            <li><a href="{{ url_for('newpost') }}"> New Post </a></li>
             <li><a href="{{ url_for('login') }}"> Log-in </a></li>
             <li><a href="{{ url_for('logout') }}"> Log-Out </a></li>
             <li><a href="{{ url_for('upload') }}"> Upload </a></li>
@@ -30,9 +31,10 @@
 </ul>
         </nav>
 
-        <div>
+        <div style="text-align:center;">
             {% if session['username']%}
             Session variable username: {{ session['username']}}
+             Session variable id: {{ session['id']}}
             {% else %}
             No Session Running
             {% endif %}

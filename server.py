@@ -9,34 +9,33 @@ from db_functions import run_search_query, generateHTMLtable, run_search_query_t
 from db_functions import reformatSQLiteDate, pythondateNow_toSQLiteDate
 from flask import g
 
-
-
 db_path = 'data/data.sqlite'
-
-
 UPLOAD_FOLDER = 'static/uploadedimages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
 app=Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 app.jinja_env.globals.update(reformatSQLiteDate=reformatSQLiteDate)
-
 app.secret_key = secrets.token_hex()
+
 
 def new_lines_paragraph(s):
     new_str = "<p>" + s.replace("\n", "</p><p>") + "</p>"
     return Markup(new_str)
 
+
 app.jinja_env.globals.update(new_lines_paragraph=new_lines_paragraph)
 
 
-
 def validate_name(name):
-    if len(name)<2:
-        return False
+    sql="""select id from user where username=?"""
+    name_tuple=(name.lower().strip(),)
+    print(name_tuple)
+    result = run_search_query_tuples(sql,name_tuple, db_path)
+    if(result):
+        return result[0][0]
     else:
-        return True
+        return None
+
 
 
 def allowed_file(file):
@@ -50,7 +49,6 @@ def allowed_file(file):
             return None
     else:
         return None
-
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -77,18 +75,20 @@ def upload():
         return render_template('upload.html', files=files)
 
 
-
 @app.route('/login', methods=['GET' , 'POST'])
 def login():
     if request.method == 'POST':
         name = request.form['username']
-        if validate_name(name):
+        check = validate_name(name)
+        if check :
             session['username'] = name
+            session['id'] = check
             return redirect( url_for('index') )
         else:
-            return render_template('log-in.html', nameerror="Name Error")
+            return render_template('log-in.html', nameerror="Log-in name not recognised")
     else:
         return render_template('log-in.html')
+
 
 @app.route('/logout')
 def logout():
@@ -96,14 +96,12 @@ def logout():
     return redirect( url_for('index') )
 
 
-
-
-# decorated functions
 @app.route('/')
 def  index():
-    sql = "select title, body, created_at, id from post"
+    sql = "select title, body, created_at, id from post order by created_at desc;"
     blog_result = run_search_query(sql, db_path)
     return render_template('index.html', posts=blog_result)
+
 
 @app.route('/viewpost/<post_id>')
 def viewpost(post_id):
@@ -117,6 +115,7 @@ def viewpost(post_id):
     result = run_search_query_tuples(sql, values_tuple, db_path)
     print(result)
     return render_template('viewposts.html',post_id=post_id, post=post_tuple, comments=result)
+
 
 @app.route('/editpost/<post_id>', methods=['GET','POST'])
 def editpost(post_id):
@@ -137,6 +136,24 @@ def editpost(post_id):
         return redirect( url_for('viewpost', post_id = post_id) )
     else:
         return render_template('editpost.html',post_id=post_id, title=session['post_data'][0], content=session['post_data'][1])
+
+
+@app.route('/newpost', methods=['GET','POST'])
+def newpost():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        sql = """
+        insert into post(title, body, user_id, created_at) values(?,?,?,?);
+        """
+        values_tuple=(title,content,session['id'], pythondateNow_toSQLiteDate() )
+        run_commit_query(sql,values_tuple,db_path)
+        return redirect( url_for('index') )
+    else:
+        return render_template('newpost.html', title="Name of book...", content="Passage from book...")
+
+# -------------- developer functions
+
 
 @app.route('/installer' , methods=['GET','POST'])
 def installer():
@@ -165,6 +182,7 @@ def installer():
     else:
         return "<h1> Page Error </h1>"
 
+
 @app.route('/viewtable/<tablename>')
 def viewtable(tablename):
     """Create HTML table of database table data and render on page
@@ -192,12 +210,10 @@ def viewtable(tablename):
         return "<h1> Table not found </h1>"
 
 
-
 with app.test_request_context():
     print(url_for('index'))
     print(url_for('login'))
     print(url_for('login',next = '6'))
-
 
 
 if __name__ == "__main__":
