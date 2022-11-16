@@ -31,12 +31,13 @@
 </ul>
         </nav>
 
-        <div style="text-align:center;">
-            {% if session['username']%}
-            Session variable username: {{ session['username']}}
-             Session variable id: {{ session['id']}}
+        <div class="developer-box" style="text-align:center;">
+            {% if session %}
+            <p>Session variables: </p>
+            <p> username: {{ session['username']}}</p>
+            <p> id: {{ session['id']}}</p>
             {% else %}
-            No Session Running
+            <p>No Session Running</p>
             {% endif %}
         </div>
         <hr/>

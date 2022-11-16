@@ -4,11 +4,11 @@ from flask import render_template, session
 from werkzeug.utils import secure_filename
 from markupsafe import Markup
 import secrets
-from db_functions import execute_external_script, get_row_count_table, updatepassword
+from db_functions import execute_external_script, get_row_count_table, updatepassword, get_password_hash
 from db_functions import run_search_query, generateHTMLtable, run_search_query_tuples, run_commit_query
 from db_functions import reformatSQLiteDate, pythondateNow_toSQLiteDate
 from flask import g
-
+# password OOEPJVXWAO
 db_path = 'data/data.sqlite'
 UPLOAD_FOLDER = 'static/uploadedimages'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -26,15 +26,7 @@ def new_lines_paragraph(s):
 app.jinja_env.globals.update(new_lines_paragraph=new_lines_paragraph)
 
 
-def validate_name(name):
-    sql="""select id from user where username=?"""
-    name_tuple=(name.lower().strip(),)
-    print(name_tuple)
-    result = run_search_query_tuples(sql,name_tuple, db_path)
-    if(result):
-        return result[0][0]
-    else:
-        return None
+
 
 
 
@@ -75,11 +67,34 @@ def upload():
         return render_template('upload.html', files=files)
 
 
+def validate_name(name, password="a"):
+    """check that a user name and password is correct
+
+    :param (str) name
+    :param (str) password
+    :return (int) id
+    """
+    sql="""select id,password from user where username=?"""
+    # get the has of the password
+    hashed_password = get_password_hash(password)
+    # stripped name for serach
+    name_tuple=(name.lower().strip(),)
+    print(name_tuple)
+    result = run_search_query_tuples(sql,name_tuple, db_path)
+    if(result):
+        if result[0][1] == hashed_password:
+            return result[0][0]
+        else:
+            return None
+    else:
+        return None
+
 @app.route('/login', methods=['GET' , 'POST'])
 def login():
     if request.method == 'POST':
         name = request.form['username']
-        check = validate_name(name)
+        password = request.form['password']
+        check = validate_name(name, password)
         if check :
             session['username'] = name
             session['id'] = check
@@ -87,12 +102,12 @@ def login():
         else:
             return render_template('log-in.html', nameerror="Log-in name not recognised")
     else:
-        return render_template('log-in.html')
+        return render_template('log-in.html', namevalue="admin", password="JHNTZLHVGZ")
 
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
+    session.clear()
     return redirect( url_for('index') )
 
 
@@ -199,7 +214,7 @@ def viewtable(tablename):
     elif tablename in ['post', 'comment', 'user']:
         headings={
             'user' : ('id','username', 'password', 'created_at', 'is_enabled' ),
-            'post' : ('id', 'title', 'body', 'user_id', 'created_at','updated_at' ),
+            'post' : ('id', 'title', 'body', 'user_id', 'created_at','image','alttext','updated_at' ),
             'comment' : ('id', 'post_id', 'created_at', 'name', 'website', 'text')
         }
         sql = 'select * from {};'.format(tablename)

@@ -6,10 +6,13 @@
 {% block content%}
 <form method="post">
         <div> <label for="username">Log In:</label> </div>
-    <div> <input type=text id="username" name="username" value="{{namevalue}}"> </div>
+    <div> <input type="text" id="username" name="username" value="{{namevalue}}"> </div>
+    <div> <label for="pw">Password:</label> </div>
+    <div> <input type="password" id="pw" name="password" value="{{password}}"> </div>
         {%if nameerror%}
     <div class="alert-box">{{nameerror}}</div>
         {% endif %}
+
     <div><input type=submit value=Login class="btn"></div>
 </form>
 {% endblock %}

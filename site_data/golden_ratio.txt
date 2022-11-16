@@ -1,0 +1,12 @@
+
+The Golden Ratio
+First posted: 17/09/2021
+
+The association of the Golden Ratio with the pentagon, fivefold symmetry, and the Platonic solids
+is interesting in itself and, indeed was more than sufficient to ignite the curiosity of the ancient
+Greeks. The Pythagorean fascination with the pentagon and the pentagram, coupled with Plato's
+interest in the regular solids and his belief that the latter represented fundamental cosmic entities,
+prompted generations of mathematicians to labor on the formulation of numerous theorems concerning phi.
+Yet the Golden Ratio would not have reached the level of almost reverential status that it
+eventually achieved were it not for some truly unique algebraic properties. In order to understand these properties,
+we need first to find the precise value of phi.

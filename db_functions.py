@@ -34,6 +34,11 @@ def create_pword_hash(length=10):
     hash = h.hexdigest()
     return pword , hash
 
+def get_password_hash(password):
+    h = hashlib.md5(password.encode())
+    hash = h.hexdigest()
+    return hash
+
 
 def updatepassword(username, db_path):
     """Create a new password with hash and update db"
