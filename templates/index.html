@@ -7,9 +7,13 @@
 <h1> Index Page </h1>
 <hr/>
 {% for post in posts %}
-<div> <h2>{{post[0]}} </h2></div>
+<div style="overflow:hidden; margin:1em 0;">
+    <div style="float:left; display:inline-block;"> <h2 style="margin:0;">{{post[0]}}</h2> </div>
+    <div style=" display:inline-block; float:right; ">
+    First posted: {{ reformatSQLiteDate(post[2]) }} </div>
+</div>
 
-<div>First posted: {{ reformatSQLiteDate(post[2]) }}</div>
+
 
 <div><img class="img-responsive" src="{{ url_for('static', filename='images/'+post[4]) }}"  alt=" {{post[5]}} "></div>
 
@@ -17,5 +21,4 @@
 
 <div><a href="{{ url_for('viewpost', post_id=post[3]) }}"><button class="btn"> Read More</button> </a></div>
 {% endfor %}
-<p> Welcome to here</p>
 {% endblock %}

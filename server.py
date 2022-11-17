@@ -132,29 +132,51 @@ def viewpost(post_id):
     print(result)
     return render_template('viewposts.html',post_id=post_id, post=post_tuple, comments=result)
 
-
+# ----   edit post and new post new substantial consolidating (maybe)     -------------
 @app.route('/editpost/<post_id>', methods=['GET','POST'])
 def editpost(post_id):
+    sql = "select title, body, created_at, image from post where id= ?"
+    values_tuple = tuple(post_id)
+    result = run_search_query_tuples(sql, values_tuple, db_path)
+    post_tuple = result[0]
     if request.method =='POST':
         title = request.form['title']
         content = request.form['content']
-        sql="""
-        UPDATE
-        post
-        SET
-        title = ?, body = ?, updated_at = ?
-        WHERE
-        id = ?;
-        """
-        updated_at = pythondateNow_toSQLiteDate()
-        update_tuple=(title,content,updated_at,post_id)
-        run_commit_query(sql, update_tuple,db_path)
-        return redirect( url_for('viewpost', post_id = post_id) )
+        f = request.files['file']
+        if f.filename == "":
+            sql="""
+            UPDATE
+            post
+            SET
+            title = ?, body = ?, updated_at = ?
+            WHERE
+            id = ?;
+            """
+            updated_at = pythondateNow_toSQLiteDate()
+            update_tuple=(title,content,updated_at,post_id)
+            run_commit_query(sql, update_tuple,db_path)
+            return redirect( url_for('viewpost', post_id = post_id) )
+        elif f.content_type in  ["image/jpeg", "image/png"]:
+            sql="""
+            UPDATE
+            post
+            SET
+            title = ?, body = ?, updated_at = ?, image = ?, alttext =?
+            WHERE
+            id = ?;
+            """
+            # save the image to static
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+            # prep tuple and run commit
+            values_tuple = (title,content, pythondateNow_toSQLiteDate(), f.filename, "Image alt text" ,post_id)
+            print(f.filename)
+            run_commit_query(sql,values_tuple,db_path)
+            return redirect(url_for('viewpost', post_id=post_id))
+        else:
+            error = "You have chosen a file but it is not a correct type of file"
+            return render_template('editpost.html', post_id=post_id, title=post_tuple[0],
+                                   content=post_tuple[1], postimage=post_tuple[3], error=error)
     else:
-        sql = "select title, body, created_at, image from post where id= ?"
-        values_tuple = tuple(post_id)
-        result = run_search_query_tuples(sql, values_tuple, db_path)
-        post_tuple = result[0]
         return render_template('editpost.html',post_id=post_id, title=post_tuple[0],
                                content=post_tuple[1], postimage=post_tuple[3])
 

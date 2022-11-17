@@ -6,12 +6,15 @@
 {% endblock %}
 {% block content%}
 <h1> Edit Posts Page </h1>
-        <form action="/editpost/{{post_id}}" method="post">
+        <form action="/editpost/{{post_id}}" method="post" enctype="multipart/form-data">
              <div> <label for="title">Post Title:</label> </div>
              <div> <input type="text" id="title" name="title" value="{{title}}"> </div>
              <div> <label for="title">Post Content:</label> </div>
              <div>  <textarea id="content" name="content" rows="7" cols="30">{{content}}</textarea> </div>
-           <div> <img class="img-responsive" src="{{ url_for('static', filename='images/'+ postimage ) }}"  alt=""> </div>
+            <div>  <label for="imageupload" class="form-label">Change Image (leave empty to keep current image)</label> </div>
+            <div> {{error}}</div>
+            <div> <input class="btn" style="width:100%; background-color:gray;" type="file" id="imageupload" name="file"> </div>
+           <div style="margin: 1em 0;"> <img class="img-responsive img-thumb" src="{{ url_for('static', filename='images/'+ postimage ) }}"  alt=""> </div>
              <div>
                     <a href="{{ url_for('viewpost', post_id=post_id) }}"><button type="button" class="btn">Cancel</button></a>
                  <input type="reset" class="btn">
