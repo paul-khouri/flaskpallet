@@ -40,7 +40,7 @@ def get_password_hash(password):
     return hash
 
 
-def updatepassword(username, db_path):
+def updatepassword(username, db_path, password='temp'):
     """Create a new password with hash and update db"
 
     :param (str) username:
@@ -49,10 +49,11 @@ def updatepassword(username, db_path):
     """
     sql = """
     update user 
-    set password = ?, created_at = ?, is_enabled = 0
+    set password = ?, created_at = ?
     where username = ?
     """
-    password, hash = create_pword_hash()
+    #password, hash = create_pword_hash()
+    hash = get_password_hash(password)
     created_at = pythondateNow_toSQLiteDate()
     values_tuple = (hash, created_at, username)
     run_commit_query(sql, values_tuple, db_path)

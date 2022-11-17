@@ -9,9 +9,10 @@
 <div><h2> {{post[0]}} </h2></div>
 <div>First posted: {{ reformatSQLiteDate(post[2]) }}</div>
 <div>{{ new_lines_paragraph(post[1]) }}</div>
-
+{% if session['permission'] == 0 %}
 <div><a href="{{ url_for('editpost', post_id=post_id) }}"><button class="btn">Edit Post</button></a>
 <a href="{{ url_for('editpost', post_id=post_id) }}"><button class="btn">Delete Post</button></a></div>
+{% endif %}
 <hr/>
 <h2>Comments</h2>
 {%if comments%}

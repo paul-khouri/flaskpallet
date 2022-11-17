@@ -10,7 +10,7 @@ from db_functions import reformatSQLiteDate, pythondateNow_toSQLiteDate
 from flask import g
 # password OOEPJVXWAO
 db_path = 'data/data.sqlite'
-UPLOAD_FOLDER = 'static/uploadedimages'
+UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app=Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -74,7 +74,7 @@ def validate_name(name, password="a"):
     :param (str) password
     :return (int) id
     """
-    sql="""select id,password from user where username=?"""
+    sql="""select id,password, is_enabled from user where username=?"""
     # get the has of the password
     hashed_password = get_password_hash(password)
     # stripped name for serach
@@ -83,7 +83,7 @@ def validate_name(name, password="a"):
     result = run_search_query_tuples(sql,name_tuple, db_path)
     if(result):
         if result[0][1] == hashed_password:
-            return result[0][0]
+            return result[0][0], result[0][2]
         else:
             return None
     else:
@@ -94,15 +94,16 @@ def login():
     if request.method == 'POST':
         name = request.form['username']
         password = request.form['password']
-        check = validate_name(name, password)
+        check, permission = validate_name(name, password)
         if check :
             session['username'] = name
             session['id'] = check
+            session['permission'] = permission
             return redirect( url_for('index') )
         else:
             return render_template('log-in.html', nameerror="Log-in name not recognised")
     else:
-        return render_template('log-in.html', namevalue="admin", password="JHNTZLHVGZ")
+        return render_template('log-in.html', namevalue="admin", password="")
 
 
 @app.route('/logout')
@@ -113,7 +114,7 @@ def logout():
 
 @app.route('/')
 def  index():
-    sql = "select title, body, created_at, id from post order by created_at desc;"
+    sql = "select title, substr(body, 0,300), created_at, id, image, alttext from post order by created_at desc;"
     blog_result = run_search_query(sql, db_path)
     return render_template('index.html', posts=blog_result)
 
@@ -124,7 +125,7 @@ def viewpost(post_id):
     values_tuple= tuple(post_id)
     result= run_search_query_tuples(sql,values_tuple,db_path)
     post_tuple = result[0]
-    session['post_data']=post_tuple
+    #session['post_data']=post_tuple
     sql="select name, text, website, created_at from comment where post_id= ?"
     values_tuple= tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
@@ -150,20 +151,38 @@ def editpost(post_id):
         run_commit_query(sql, update_tuple,db_path)
         return redirect( url_for('viewpost', post_id = post_id) )
     else:
-        return render_template('editpost.html',post_id=post_id, title=session['post_data'][0], content=session['post_data'][1])
+        sql = "select title, body, created_at, image from post where id= ?"
+        values_tuple = tuple(post_id)
+        result = run_search_query_tuples(sql, values_tuple, db_path)
+        post_tuple = result[0]
+        return render_template('editpost.html',post_id=post_id, title=post_tuple[0],
+                               content=post_tuple[1], postimage=post_tuple[3])
 
 
 @app.route('/newpost', methods=['GET','POST'])
 def newpost():
     if request.method == 'POST':
+        # collect information from form
         title = request.form['title']
         content = request.form['content']
-        sql = """
-        insert into post(title, body, user_id, created_at) values(?,?,?,?);
-        """
-        values_tuple=(title,content,session['id'], pythondateNow_toSQLiteDate() )
-        run_commit_query(sql,values_tuple,db_path)
-        return redirect( url_for('index') )
+        f = request.files['file']
+        # assess the image and feedback if problem
+        if f.content_type in ["image/jpeg", "image/png"]:
+            # if okay prep query
+            sql = """
+            insert into post(title, body, user_id, created_at,image, alttext) values(?,?,?,?,?,?);
+            """
+            # save the image to static
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+            # prep tuple and run commit
+            values_tuple = (title,content,session['id'], pythondateNow_toSQLiteDate(), f.filename, "Image alt text" )
+            run_commit_query(sql,values_tuple,db_path)
+            return redirect( url_for('index') )
+        elif f.filename == "":
+            error = "You have not selected an image"
+        else:
+            error = "Image type not recognised"
+        return render_template('newpost.html', title="Name of book...", content="Passage from book...", error=error)
     else:
         return render_template('newpost.html', title="Name of book...", content="Passage from book...")
 
@@ -184,12 +203,14 @@ def installer():
         if execute_external_script(sql_script_path, db_path):
             # data base has been rebuilt
             # now create new hashed password
-            pword = updatepassword('admin',db_path)
+            admin_pw = updatepassword('admin',db_path)
+            member_pw = updatepassword('member',db_path)
             #organise feedback data
             row_data = dict()
             for t in ['post', 'comment','user']:
                 row_data["Table: "+t] = "Number of Rows= "+str(get_row_count_table(t,db_path))
-            row_data["New Password: "] = pword
+            row_data["Admin Password: "] = admin_pw
+            row_data["Member Password: "] = member_pw
             return render_template('installer.html', method="POST", row_data=row_data)
         else:
             return "<h1> Page Error on POST </h1>"

@@ -13,11 +13,14 @@
 {% endblock %}
 {% block content%}
 <h1> Create your new post </h1>
-        <form action="/newpost" method="post">
-             <div> <label for="title">Post Title:</label> </div>
-             <div> <input type="text" id="title" name="title" placeholder="{{title}}"> </div>
-             <div> <label for="title">Post Content:</label> </div>
-             <div>  <textarea id="content" name="content" rows="7" cols="30" placeholder="{{content}}"></textarea> </div>
+        <form action="/newpost" method="post" enctype=multipart/form-data>
+            <div>  <label for="title">Post Title:</label> </div>
+            <div>  <input type="text" id="title" name="title" placeholder="{{title}}"> </div>
+            <div>  <label for="title">Post Content:</label> </div>
+            <div>  <textarea id="content" name="content" rows="7" cols="30" placeholder="{{content}}"></textarea> </div>
+            <div>  <label for="imageupload" class="form-label">Add Image</label> </div>
+            <div> {{error}}</div>
+            <div> <input class="btn" style="width:100%; background-color:gray;" type="file" id="imageupload" name="file"> </div>
              <div>
                  <a href="{{ url_for('index') }}"><button type="button" class="btn">Cancel</button></a>
                  <input type="reset" class="btn">

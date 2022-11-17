@@ -10,9 +10,8 @@
         <nav>
             <ul>
             <li><a href="{{ url_for('index') }}"> Index </a></li>
+                {% if session['permission'] == 0 %}
             <li><a href="{{ url_for('newpost') }}"> New Post </a></li>
-            <li><a href="{{ url_for('login') }}"> Log-in </a></li>
-            <li><a href="{{ url_for('logout') }}"> Log-Out </a></li>
             <li><a href="{{ url_for('upload') }}"> Upload </a></li>
             <li><a href="{{ url_for('installer') }}"> Installer </a></li>
             <li>
@@ -28,14 +27,21 @@
             </div>
           </div>
             </li>
+                {% endif %}
+            {% if session %}
+            <li><a href="{{ url_for('logout') }}"> Log-Out </a></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}"> Log-in </a></li>
+            {% endif %}
 </ul>
         </nav>
 
         <div class="developer-box" style="text-align:center;">
             {% if session %}
-            <p>Session variables: </p>
-            <p> username: {{ session['username']}}</p>
-            <p> id: {{ session['id']}}</p>
+            <p>Session Variables</p>
+            {% for key, value in session.items() %}
+                <p>{{ key }} : {{ value }}</p>
+            {% endfor %}
             {% else %}
             <p>No Session Running</p>
             {% endif %}

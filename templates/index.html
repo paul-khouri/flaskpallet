@@ -8,8 +8,12 @@
 <hr/>
 {% for post in posts %}
 <div> <h2>{{post[0]}} </h2></div>
+
 <div>First posted: {{ reformatSQLiteDate(post[2]) }}</div>
-<div>{{ new_lines_paragraph(post[1]) }}</div>
+
+<div><img class="img-responsive" src="{{ url_for('static', filename='images/'+post[4]) }}"  alt=" {{post[5]}} "></div>
+
+<div class="post-text">{{ new_lines_paragraph(post[1]) }}</div>
 
 <div><a href="{{ url_for('viewpost', post_id=post[3]) }}"><button class="btn"> Read More</button> </a></div>
 {% endfor %}

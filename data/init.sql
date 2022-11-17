@@ -16,12 +16,14 @@ create table user(
     username text not null,
     password text not null,
     created_at date not null,
-    is_enabled boolean not null default true
+    is_enabled integer not null
 );
 
 /* create user 1 , to be updated when initialisation (php) runs */
 insert into user( username , password, created_at , is_enabled)
 values('admin', 'unhashed password', datetime('now', '-3 months'), 0);
+insert into user( username , password, created_at , is_enabled)
+values('member', 'temp', datetime('now', '-3 months'), 1);
 
 
 
@@ -93,8 +95,8 @@ values(
 "astonishment which steadily spread around me at each new exchange..",
     1,
     datetime('now', '-1 months', '+680 minutes', '+28 seconds'),
-    "placeholder.png",
-    "Place holder"
+    "secret_life.jpg",
+    "Bookcover with Salvador Dali drawing of a witch"
 );
 
 insert into post(title, body, user_id, created_at,image, alttext)
@@ -110,8 +112,8 @@ values(
 "we need first to find the precise value of phi.",
     1,
     datetime('now', '-19 days', '1200 minutes', '+10 seconds'),
-    "placeholder.png",
-    "Place holder"
+    "golden_ratio.jpg",
+    "Black book cover with nautilus shell spiral"
 );
 
 
