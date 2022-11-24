@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Uploader Form</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<style>
+  label {
+    display: block;
+    font: 1rem 'Fira Sans', sans-serif;
+  }
+
+  input, label {
+    margin: .4rem 0;
+  }
+</style>
+<form method="post" enctype="multipart/form-data">
+  <div>
+<label for="my_upload"> Choose a file picture</label>
+<input id="my_upload" type="file" name="New File" accept="image/*" onchange="updateFilename(this)">
+  </div>
+  <div>
+    <button>Submit</button>
+  </div>
+</form>
+<p>The name of the file you picked is:</p>
+<p id="fileinformation">(none)</p>
+<script>
+  let y = document.getElementById('fileinformation')
+
+  function updateFilename(file) {
+    console.log(file)
+
+    for (const f of file.files) {
+      console.log( `\n${f.name}`);
+      y.innerHTML = `File name: ${f.name}
+                    <br>File size: ${f.size} bytes
+                    <br> Last modified: (UNIX time) ${f.lastModified}
+                    <br> Last modified: ${f.lastModifiedDate}
+                    <br> File type: ${f.type} `
+    }
+  }
+
+  let x = document.getElementById("my_upload")
+  x.addEventListener('change', readFileInfo)
+  function readFileInfo(f){
+    console.log(f.target.files)
+  }
+</script>
+
+</body>
+</html>

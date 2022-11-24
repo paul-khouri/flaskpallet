@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Uploader Form -- B</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<style>
+  body{
+    font-size: 100%;
+    font-family: sans-serif;
+  }
+  .btn{
+    background-color: cornflowerblue;
+    color: white;
+    border-radius: 1em;
+    padding: 0.25em 1em;
+    font-size: 1.5em;
+    transition: background-color 0.4s;
+    display:inline-block;
+    border:0;
+
+  }
+  .btn:hover{
+   background-color: tomato;
+
+  }
+  form{
+    margin-top: 2em;
+    max-width: 30em;
+    margin:auto;
+  }
+  .preview img{
+    max-width: 200px;
+  }
+  form div{
+    border: 0px solid pink;
+    padding:0;
+    margin: 0 0 25px 0;
+  }
+  input[type=file], .for-input{
+    font-size: 0;
+    padding:0;
+    margin:0;
+  }
+  input[type=text]{
+    background-color: lightyellow;
+    border:0;
+  }
+
+  input[type=text], label{
+    font-size: 2em;
+    color: gray;
+
+    width:100%;
+    display: block;
+    box-sizing: border-box;
+  }
+
+  input[type=datetime-local]{
+    font-size: 2em;
+    font-family: sans-serif;
+    color: gray;
+    background-color: lightyellow;
+    width:100%;
+    display: block;
+    box-sizing: border-box;
+    border:0;
+
+  }
+
+
+</style>
+
+<form method="post" enctype="multipart/form-data">
+  <div>
+    <label for="user_name">Enter name:  </label>
+    <input type="text" id="user_name" name="User Name" value="Prince Harry" required>
+  </div>
+  <div>
+    <label for="event"> Date and time of the event:</label>
+    <input id="event"
+           type="datetime-local"
+           name="Event Date"
+           min="2022-01-01"
+           max="2022-12-31"
+           required />
+    <span class="validity"></span>
+  </div>
+<div>
+<label for="image_uploads" class="btn"> Choose images to upload (PNG, JPG)</label>
+</div>
+  <div class="for-input">
+  <input
+    type="file"
+    id="image_uploads"
+    name="Image Uploads"
+    accept=".png, .jpg,.jpeg"
+    multiple />
+</div>
+  <div class="preview">
+    <p>No files currently selected for upload</p>
+  </div>
+  <div style="text-align: right;">
+    <button id="reset" type="reset" class="btn" > Reset </button> <button class="btn">Submit</button>
+  </div>
+</form>
+<script>
+
+
+
+  const input = document.querySelector('#image_uploads');
+  const preview = document.querySelector('.preview')
+  input.style.opacity = "0";
+
+  input.addEventListener('change', updateImageDisplay);
+
+
+
+
+  function updateImageDisplay(){
+    while(preview.firstChild){
+      preview.removeChild(preview.firstChild)
+    }
+    const currentFiles = input.files
+    if(currentFiles.length === 0){
+      const para= document.createElement('p')
+      para.textContent = "No files currently selected"
+      preview.appendChild(para)
+    }else{
+      const list = document.createElement('ol')
+      preview.appendChild(list)
+
+      for(const file of currentFiles){
+        const listItem =document.createElement('li')
+        const para = document.createElement('p')
+        if(validFileType(file)){
+          para.textContent = `File Name: ${file.name}, File size: ${file.size}. `
+          const image = document.createElement('img')
+          image.src = URL.createObjectURL(file)
+          listItem.append(para)
+          listItem.append(image)
+        }else{
+          para.textContent = `File name: ${file.name}, is not a valid file type, please update your selection`
+          listItem.append(para)
+        }
+
+        list.appendChild(listItem)
+      }
+    }
+  }
+// clean up on reset
+  const reset = document.querySelector("#reset")
+  reset.addEventListener('mouseup', resetnull);
+  function resetnull(){
+    preview.innerHTML = "<p>No files selected</p>"
+  }
+
+  const fileTypes = [
+    "image/apng",
+    "image/bmp",
+    "image/gif",
+    "image/jpeg",
+    "image/pjpeg",
+    "image/png",
+    "image/svg+xml",
+    "image/tiff",
+    "image/webp",
+    "image/x-icon"
+  ];
+
+  function validFileType(file) {
+    return fileTypes.includes(file.type);
+  }
+</script>
+
+
+
+</body>
+</html>
