@@ -269,6 +269,7 @@ def set_three(db_path):
 if __name__ == "__main__":
     db_path = 'data/data.sqlite'
     sql_script_path = 'data/init.sql'
+    print(os.path.abspath(db_path))
     #execute_external_script(sql_script_path, db_path)
     #set_one(db_path)
     #set_two(db_path)

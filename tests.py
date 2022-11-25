@@ -1,6 +1,7 @@
 from _datetime import datetime
 import random
 import hashlib
+import sys
 
 
 
@@ -45,6 +46,7 @@ my_string= "hello \ngoodbye"
 new_string = "<p>" + my_string.replace("\n", "</p><p>") + "</p>"
 print(my_string)
 print(new_string)
+print(sys.path)
 
 
 

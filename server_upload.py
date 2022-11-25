@@ -116,7 +116,7 @@ def logout():
 def  index():
     sql = "select title, substr(body, 0,300), created_at, id, image, alttext from post order by created_at desc;"
     blog_result = run_search_query(sql, db_path)
-    return render_template('index.html')
+    return render_template('index.html', posts=blog_result)
 
 
 @app.route('/viewpost/<post_id>')
