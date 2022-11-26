@@ -16,6 +16,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.secret_key = secrets.token_hex()
 
+# ---- functions that can be used on template pages
 app.jinja_env.globals.update(reformatSQLiteDate=reformatSQLiteDate)
 
 
@@ -25,6 +26,7 @@ def new_lines_paragraph(s):
 
 
 app.jinja_env.globals.update(new_lines_paragraph=new_lines_paragraph)
+# ----------------------------------------------------
 
 
 def allowed_file(file):
@@ -61,6 +63,21 @@ def validate_name(name, password="a"):
             return None
     else:
         return None
+
+
+def session_check(permission):
+    """Check if user has permission to access the page
+
+    :param permission: (int)
+    :return: boolean
+    """
+    if session:
+        if session['permission'] != permission:
+            return False
+        else:
+            return True
+    else:
+        return False
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -110,6 +127,9 @@ def viewpost(post_id):
 # ----   edit post and new post substantial consolidating (maybe)     -------------
 @app.route('/editpost/<post_id>', methods=['GET', 'POST'])
 def editpost(post_id):
+    if not session_check(0):
+        error = "You do not have permission to view this page"
+        return render_template('error.html', error=error)
     sql = "select title, body, created_at, image from post where id= ?"
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
@@ -158,6 +178,9 @@ def editpost(post_id):
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
+    if not session_check(0):
+        error = "You do not have permission to view this page"
+        return render_template('error.html', error=error)
     if request.method == 'POST':
         # collect information from form
         title = request.form['title']
@@ -189,6 +212,9 @@ def newpost():
 @app.route('/installer', methods=['GET', 'POST'])
 def installer():
     """Delete all tables and re build initial database"""
+    if not session_check(0):
+        error = "You do not have permission to view this page"
+        return render_template('error.html', error=error)
     # initialisation script
     global sql_script_path
     # page with button to install
@@ -223,6 +249,9 @@ def viewtable(tablename):
     :param (str) tablename:
     :return: (html) render_template
     """
+    if not session_check(0):
+        error = "You do not have permission to view this page"
+        return render_template('error.html', error=error)
     global db_path
     if tablename == "master-data":
         sql = 'select * from sqlite_master;'

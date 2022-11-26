@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Error Page{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content%}
+<h1> Error Page </h1>
+<hr>
+   <div class="alert-box"> {{error}} </div>
+{% endblock %}
