@@ -5,15 +5,20 @@
 {% endblock %}
 {% block content%}
 <h1> View Posts Page </h1>
-<hr/>
-<div><h2> {{post[0]}} </h2></div>
-<div>First posted: {{ reformatSQLiteDate(post[2]) }}</div>
+<hr>
+
+<div style="overflow:hidden; margin:1em 0;">
+    <div style="float:left; display:inline-block;"> <h2 style="margin:0;">{{post[0]}}</h2> </div>
+    <div style=" display:inline-block; float:right; ">
+    First posted: {{ reformatSQLiteDate(post[2]) }} </div>
+</div>
+<div><img class="img-responsive" src="{{ url_for('static', filename='images/'+post[3]) }}"  alt=" {{post[4]}} "></div>
 <div>{{ new_lines_paragraph(post[1]) }}</div>
 {% if session['permission'] == 0 %}
 <div><a href="{{ url_for('editpost', post_id=post_id) }}"><button class="btn">Edit Post</button></a>
 <a href="{{ url_for('editpost', post_id=post_id) }}"><button class="btn">Delete Post</button></a></div>
 {% endif %}
-<hr/>
+<hr>
 <h2>Comments</h2>
 {%if comments%}
 {% for comment in comments %}

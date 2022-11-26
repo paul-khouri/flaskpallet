@@ -1,6 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 {% block head %}
 <link rel="stylesheet" href="{{  url_for('static', filename='styles.css')  }}">
 <title>{% block title%}{% endblock %}</title>
@@ -12,7 +14,6 @@
             <li><a href="{{ url_for('index') }}"> Index </a></li>
                 {% if session['permission'] == 0 %}
             <li><a href="{{ url_for('newpost') }}"> New Post </a></li>
-            <li><a href="{{ url_for('upload') }}"> Upload </a></li>
             <li><a href="{{ url_for('installer') }}"> Installer </a></li>
             <li>
             <div class="drop-cover">
@@ -46,7 +47,7 @@
             <p>No Session Running</p>
             {% endif %}
         </div>
-        <hr/>
+        <hr>
         <div class="container"> 
             {% block content %}
             {% endblock %}
