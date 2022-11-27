@@ -40,22 +40,22 @@ def get_password_hash(password):
     return hash
 
 
-def updatepassword(username, db_path, password='temp'):
+def updatepassword(user_id, db_path, password='temp'):
     """Create a new password with hash and update db"
 
-    :param (str) username:
+    :param (str) user_id:
     :param (path) db_path:
     :return: (str) password
     """
     sql = """
     update user 
     set password = ?, created_at = ?
-    where username = ?
+    where user_id = ?
     """
     #password, hash = create_pword_hash()
     hash = get_password_hash(password)
     created_at = pythondateNow_toSQLiteDate()
-    values_tuple = (hash, created_at, username)
+    values_tuple = (hash, created_at, user_id)
     run_commit_query(sql, values_tuple, db_path)
     return password
 
@@ -90,11 +90,6 @@ def generateHTMLtable(result_tuple_list, header_tuple=()):
         tablestring +="</tr>\n<tr>"
     tablestring += "</tr></table>"
     return tablestring
-
-
-
-
-
 
 
 #absolute_db_path = os.path.abspath(db_path)
@@ -194,98 +189,10 @@ def get_row_count_table(tablename,db_path):
     return result[0][0]
 
 
-
-
-
-def set_one(db_path):
-    result = get_row_count_table('post', db_path)
-    print(result)
-    sql = "select count(*) as c from post"
-    result = run_search_query(sql, db_path)
-    print(result)
-    sql = "select * from post"
-    result = run_search_query(sql, db_path)
-    print(result)
-    for x in result:
-        for y in x:
-            print(y)
-    sql = 'select * from sqlite_master;'
-    result = run_search_query(sql, db_path)
-    # for x in result:
-    # print(x)
-    sql = "select id, title, created_at, body,(select count(*) from comment " \
-          "where comment.post_id = post.id) comment_count " \
-          "from post order by created_at desc"
-    result = run_search_query(sql, db_path)
-    print(result)
-
-def set_two(db_path):
-    sql = "select * from user"
-    result = run_search_query(sql, db_path)
-    print(result)
-    # updatepassword('admin', db_path)
-    sql = "insert into user (username, password, created_at, is_enabled)" \
-          "values ('test', 'sdjjsdg', '2021-09-28 16:50:48', 0)"
-    run_commit_query(sql, (), db_path)
-    sql = "insert into user (username, password, created_at, is_enabled)" \
-          "values (?, ?, ?, ?)"
-    run_commit_query(sql, ('qtest', 'aaa', '2021-09-28 16:50:48', 0), db_path)
-    sql = "select * from user"
-    result = run_search_query(sql, db_path)
-    print(result)
-    sql = "delete from user where id>1"
-    run_commit_query(sql, (), db_path)
-    sql = "select * from user"
-    result = run_search_query(sql, db_path)
-    print(result)
-
-def set_three(db_path):
-    sql = """
-        update user 
-        set password = 'lavatsa', created_at = '2021-09-28 16:50:48', is_enabled = 1
-        where username = 'admin' 
-        """
-    run_commit_query(sql, (), db_path)
-    sql = "select * from user"
-    result = run_search_query(sql, db_path)
-    print(result)
-    sql = """
-        update user 
-        set password = ?, created_at = ?, is_enabled = 0
-        where username = ?
-        """
-    values_tuple = ('maya', '1800-09-28 16:50:48', 'admin')
-    password, hash = create_pword_hash()
-    created_at = pythondateNow_toSQLiteDate()
-    values_tuple = (hash, created_at, 'admin')
-    run_commit_query(sql, values_tuple, db_path)
-    sql = "select * from user"
-    result = run_search_query(sql, db_path)
-    print(result)
-
-
-
-
 if __name__ == "__main__":
     db_path = 'data/data.sqlite'
     sql_script_path = 'data/init.sql'
     print(os.path.abspath(db_path))
-    #execute_external_script(sql_script_path, db_path)
-    #set_one(db_path)
-    #set_two(db_path)
-    #set_three(db_path)
-    #print(updatepassword('admin', db_path))
-    # sql = "select * from user"
-    # field_list = ('id', 'username', 'password', 'created_at', 'is_enabled')
-    # result = run_search_query(sql, db_path)
-    # print(result)
-    # sql = 'select * from sqlite_master;'
-    # result = run_search_query(sql, db_path)
-    # #print(result)
-    # table = generateHTMLtable(result[1:], result[0])
-    # print(table)
-
-
 
 
 

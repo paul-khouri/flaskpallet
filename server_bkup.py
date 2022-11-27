@@ -36,22 +36,20 @@ def validate_name(name, password="a"):
     :param (str) password
     :return (int) id
     """
-    sql = """select user_id,password, permission from user where username=?"""
-    # get the hash of the password
+    sql = """select id,password, is_enabled from user where username=?"""
+    # get the has of the password
     hashed_password = get_password_hash(password)
     # stripped name for search
     name_tuple = (name.lower().strip(),)
     print(name_tuple)
     result = run_search_query_tuples(sql, name_tuple, db_path)
-    print("In validate name")
-    print(result)
     if result:
         if result[0][1] == hashed_password:
             return result[0][0], result[0][2]
         else:
-            return None, None
+            return None
     else:
-        return None, None
+        return None
 
 
 def session_check(permission):
@@ -94,48 +92,24 @@ def logout():
 
 @app.route('/')
 def index():
-    sql = "select title, substr(body, 0,300), created_at, post_id, image, alttext from post order by created_at desc;"
+    sql = "select title, substr(body, 0,300), created_at, id, image, alttext from post order by created_at desc;"
     blog_result = run_search_query(sql, db_path)
-    if blog_result:
-        return render_template('index.html', posts=blog_result)
-    else:
-        return render_template('index.html')
+    return render_template('index.html', posts=blog_result)
 
 
 @app.route('/viewpost/<post_id>')
 def viewpost(post_id):
-    sql = "select title, body, created_at, image, alttext, user_id from post where post_id= ?"
-    # convert post_id str to tuple
+    sql = "select title, body, created_at, image, alttext from post where id= ?"
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
     post_tuple = result[0]
-    # complete another database request for the specific post
-    sql = "select user_id, text, created_at from comment where post_id= ?"
+    # session['post_data']=post_tuple
+    sql = "select name, text, website, created_at from comment where post_id= ?"
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
     print(result)
     return render_template('viewposts.html', post_id=post_id, post=post_tuple, comments=result)
 
-
-@app.route('/deletepost/<post_id>', methods=['GET', 'POST'])
-def deletepost(post_id):
-    description = request.args.get('description', None)
-    if not session_check(0):
-        error = "You do not have permission to view this page"
-        return render_template('error.html', error=error)
-    global db_path
-    if request.method == 'GET':
-        return render_template("confirmation.html", description=description, post_id=post_id)
-    elif request.method == 'POST':
-        # delete all comments
-        sql="delete from comment where post_id = ?"
-        values_tuple = tuple(post_id)
-        run_commit_query(sql, values_tuple, db_path)
-        # delete post
-        sql="delete from post where post_id = ?"
-        values_tuple = tuple(post_id)
-        run_commit_query(sql, values_tuple, db_path)
-        return redirect(url_for('index'))
 
 # ----   edit post and new post substantial consolidating (maybe)     -------------
 @app.route('/editpost/<post_id>', methods=['GET', 'POST'])
@@ -143,7 +117,7 @@ def editpost(post_id):
     if not session_check(0):
         error = "You do not have permission to view this page"
         return render_template('error.html', error=error)
-    sql = "select title, body, created_at, image from post where post_id= ?"
+    sql = "select title, body, created_at, image from post where id= ?"
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
     post_tuple = result[0]
@@ -158,7 +132,7 @@ def editpost(post_id):
             SET
             title = ?, body = ?, updated_at = ?
             WHERE
-            post_id = ?;
+            id = ?;
             """
             updated_at = pythondateNow_toSQLiteDate()
             update_tuple = (title, content, updated_at, post_id)
@@ -171,7 +145,7 @@ def editpost(post_id):
             SET
             title = ?, body = ?, updated_at = ?, image = ?, alttext =?
             WHERE
-            post_id = ?;
+            id = ?;
             """
             # save the image to static
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
@@ -225,9 +199,9 @@ def newpost():
 @app.route('/installer', methods=['GET', 'POST'])
 def installer():
     """Delete all tables and re build initial database"""
-    #if not session_check(0):
-        #error = "You do not have permission to view this page"
-        #return render_template('error.html', error=error)
+    if not session_check(0):
+        error = "You do not have permission to view this page"
+        return render_template('error.html', error=error)
     # initialisation script
     global sql_script_path
     # page with button to install
@@ -238,17 +212,15 @@ def installer():
         # special call for external script
         if execute_external_script(sql_script_path, db_path):
             # data base has been rebuilt
-            # for summary print out
-            row_data = dict()
-            # get all users from the initialisation
-            sql = "select user_id, username from user"
-            users=run_search_query(sql,db_path)
-            # loop and hash all passwords (defaults to temp)
-            for u in users:
-                row_data[u[1]]=updatepassword(u[0], db_path)
+            # now create new hashed password
+            admin_pw = updatepassword('admin', db_path)
+            member_pw = updatepassword('member', db_path)
             # organise feedback data
+            row_data = dict()
             for t in ['post', 'comment', 'user']:
                 row_data["Table: "+t] = "Number of Rows= "+str(get_row_count_table(t, db_path))
+            row_data["Admin Password: "] = admin_pw
+            row_data["Member Password: "] = member_pw
             return render_template('installer.html', method="POST", row_data=row_data)
         else:
             return "<h1> Page Error on POST </h1>"
@@ -275,9 +247,9 @@ def viewtable(tablename):
         return render_template('table-data.html', tablelisting=Markup(tablelisting))
     elif tablename in ['post', 'comment', 'user']:
         headings = {
-            'user': ('user_id', 'username', 'password', 'created_at', 'permission'),
-            'post': ('post_id', 'title', 'body', 'user_id', 'created_at', 'image', 'alttext', 'updated_at'),
-            'comment': ('comment_id', 'post_id', 'created_at', 'user_id', 'text', 'updated_at')
+            'user': ('id', 'username', 'password', 'created_at', 'is_enabled'),
+            'post': ('id', 'title', 'body', 'user_id', 'created_at', 'image', 'alttext', 'updated_at'),
+            'comment': ('id', 'post_id', 'created_at', 'name', 'website', 'text')
         }
         sql = 'select * from {};'.format(tablename)
         result = run_search_query(sql, db_path)

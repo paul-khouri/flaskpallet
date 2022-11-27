@@ -12,28 +12,24 @@ pragma foreign_keys = on;
 
 
 create table user(
-    user_id integer primary key autoincrement not null,
+    id integer primary key autoincrement not null,
     username text not null,
     password text not null,
-    email text not null unique,
     created_at date not null,
-    permission integer not null
+    is_enabled integer not null
 );
 
-/* create user 1 , to be updated when initialisation runs */
+/* create user 1 , to be updated when initialisation (php) runs */
+insert into user( username , password, created_at , is_enabled)
+values('admin', 'unhashed password', datetime('now', '-3 months'), 0);
+insert into user( username , password, created_at , is_enabled)
+values('member', 'temp', datetime('now', '-3 months'), 1);
 
-insert into user( username , password, email, created_at , permission)
-values('admin', 'temp','a@b.com' ,datetime('now', '-3 months'), 0);
-insert into user( username , password,email, created_at , permission)
-values('mary', 'temp', 'c@b.com',datetime('now', '-3 months'), 1);
-insert into user( username , password,email, created_at , permission)
-values('jo', 'temp', 'd@b.com',datetime('now', '-6 months'), 1);
 
-/*server install: loop through users to hash passwords */
 
 
 create table post(
-    post_id integer primary key autoincrement not null,
+    id integer primary key autoincrement not null,
     title text not null,
     body text not null,
     user_id integer not null,
@@ -41,7 +37,7 @@ create table post(
     image text,
     alttext text,
     updated_at date,
-    foreign key (user_id) references user(user_id)
+    foreign key (user_id) references user(id)
 );
 
 insert into post(title, body, user_id, created_at,image, alttext)
@@ -124,44 +120,48 @@ values(
 
 
 create table comment(
-    comment_id integer primary key autoincrement not null,
+    id integer primary key autoincrement not null,
     post_id integer not null,
     created_at date not null,
-    user_id text not null,
+    name text not null,
+    website text,
     text text not null,
-    updated_at date,
-    foreign key (post_id) references post(post_id)
+    foreign key (post_id) references post(id)
 );
 
-insert into comment(post_id, created_at, user_id, text)
+insert into comment(post_id, created_at, name, website, text)
 values(
     1,
     datetime('now', '-10 days', '+820 minutes', '+0 seconds'),
-    2,
-    "This is Jo's contribution"
+    'Jimmy',
+    'http://google.com',
+    "This is Jimmy's contribution"
 );
 
-insert into comment(post_id, created_at, user_id, text)
+insert into comment(post_id, created_at, name, website, text)
 values(
     1,
-    datetime('now', '-10 days', '+820 minutes', '+0 seconds'),
-    1,
-    "This is Mary's contribution"
+    datetime('now', '-10 days', '+900 minutes', '+1 seconds'),
+    'Jane',
+    'http://msn.com',
+    "This is Jane's contribution"
 );
 
-insert into comment(post_id, created_at, user_id, text)
+insert into comment(post_id, created_at, name, website, text)
 values(
     1,
     datetime('now', '-9 days', '+50 minutes', '+2 seconds'),
-    1,
-    "This is another Mary's contribution"
+    'Johnny',
+    'http://yahoo.com',
+    "This is Johnny's contribution"
 );
 
-insert into comment(post_id, created_at, user_id, text)
+insert into comment(post_id, created_at, name, website, text)
 values(
-    2,
-    datetime('now', '-9 days', '+50 minutes', '+2 seconds'),
-    2,
-    "This is another Jo's contribution"
+    1,
+    datetime('now', '-8 days', '+350 minutes', '+3 seconds'),
+    'Alice',
+    'http://bing.com',
+    "This is Alices's contribution"
 );
 

@@ -3,29 +3,28 @@
 {% block head %}
 {{ super() }}
 {% endblock %}
+{% block heading %}View Posts Page{% endblock %}
 {% block content%}
-<h1> View Posts Page </h1>
-<hr>
+
 
 <div style="overflow:hidden; margin:1em 0;">
     <div style="float:left; display:inline-block;"> <h2 style="margin:0;">{{post[0]}}</h2> </div>
     <div style=" display:inline-block; float:right; ">
-    First posted: {{ reformatSQLiteDate(post[2]) }} </div>
+    First posted: {{ reformatSQLiteDate(post[2]) }} by {{post[5]}}</div>
 </div>
 <div><img class="img-responsive" src="{{ url_for('static', filename='images/'+post[3]) }}"  alt=" {{post[4]}} "></div>
 <div>{{ new_lines_paragraph(post[1]) }}</div>
 {% if session['permission'] == 0 %}
-<div><a href="{{ url_for('editpost', post_id=post_id) }}"><button class="btn">Edit Post</button></a>
-<a href="{{ url_for('editpost', post_id=post_id) }}"><button class="btn">Delete Post</button></a></div>
+<div><a href="{{ url_for('editpost', post_id=post_id) }}"><span class="btn">Edit Post</span></a>
+<a href="{{ url_for('deletepost', post_id=post_id , description = post[0]) }}"><span class="btn">Delete Post</span></a></div>
 {% endif %}
 <hr>
 <h2>Comments</h2>
 {%if comments%}
 {% for comment in comments %}
-<div> Name: {{comment[0]}}</div>
+<div> User Id: {{comment[0]}}</div>
 <div>{{ new_lines_paragraph(comment[1]) }}</div>
-<div><a href={{ comment[2] }} target="_blank">{{ comment[2] }}</a></div>
-<div>{{ reformatSQLiteDate(comment[3]) }}</div>
+<div>{{ reformatSQLiteDate(comment[2]) }}</div>
 {% endfor %}
 {% endif %}
 

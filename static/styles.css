@@ -7,14 +7,25 @@ body{
     margin:0;
 }
 
+h1{
+    position:absolute;
+    top:100%;
+    right:0;
+    background-color: darkorchid;
+    margin:0;
+    padding: 0.5em;
+    transform: translate(0,-100%);
+}
+
 p{
 font-size: 1.5em;
 line-height: 1.5;
 text-align: justify;
 }
+
 .post-text p::after{
 content: ".......";
-colour: blue;
+color: blue;
 }
 
 .alert-box{
@@ -65,7 +76,8 @@ th, td
 .container{
 max-width:1000px;
 margin:auto;
-border: 0px solid pink;
+border: 1px solid pink;
+padding: 0 1em 0 1em;
 }
 hr{
 border: 3px solid orange;
@@ -85,6 +97,11 @@ max-width:80%;
 margin:auto;
 display:block;
 }
+.banner{
+width:100%;
+margin:auto;
+display:block;
+}
 
 /* ---- buttons ---- */
 .btn{
@@ -92,7 +109,7 @@ background-color: rgb(80,100,255);
 font-size: 1em;
 color: white;
 text-decoration: none;
-font-weight: normal;
+font-weight:bold;
 display: inline-block;
 padding: .5em 1em;
 margin-bottom: 1em;
@@ -131,10 +148,12 @@ width:33%;
     z-index: 1;
 }
 nav{
-    background-color: rgba(255, 255, 255, 1);
+    /*background-color: rgba(0, 255, 255, 1);*/
     transition: background-color 2s;
     text-align: center;
     width:100%;
+    position: absolute;
+    z-index: 1;
 }
 
 ul{

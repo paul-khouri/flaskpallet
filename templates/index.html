@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
-{% block title %}Index Page{% endblock %}
+{% block title %}Passages Home{% endblock %}
 {% block head %}
 {{ super() }}
 {% endblock %}
+{% block heading %}Passages Home{% endblock %}
 {% block content%}
-<h1> Index Page </h1>
-<hr>
+
 {% for post in posts %}
 <div style="overflow:hidden; margin:1em 0;">
     <div style="float:left; display:inline-block;"> <h2 style="margin:0;">{{post[0]}}</h2> </div>

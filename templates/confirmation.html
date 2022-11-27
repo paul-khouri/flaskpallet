@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Confirmation{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content%}
+<h1> Confirmation Page </h1>
+<hr>
+    <form action="/deletepost/{{post_id}}" method="post" enctype=multipart/form-data>
+        <div class="alert-box"> Please confirm you would like to delete {{ description }}</div>
+        <div>
+        <a href="{{ url_for('viewpost', post_id=post_id) }}"><button type="button" class="btn">Cancel</button></a>
+        <input type="submit" value="Submit" class="btn">
+            </div>
+    </form>
+{% endblock %}
