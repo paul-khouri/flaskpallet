@@ -1,0 +1,29 @@
+(venv) khouripa@localadmins-MBP flask_pallet % ls
+README.md       data            server.py       site_data       templates       tests.py        venv
+__pycache__     db_functions.py server_bkup.py  static          testing_area    uploads
+(venv) khouripa@localadmins-MBP flask_pallet % cd data
+(venv) khouripa@localadmins-MBP data % ls
+data.sqlite     init.sql        init_bkup.sql
+(venv) khouripa@localadmins-MBP data % sqlite3
+SQLite version 3.37.0 2021-12-09 01:34:53
+Enter ".help" for usage hints.
+Connected to a transient in-memory database.
+Use ".open FILENAME" to reopen on a persistent database.
+sqlite> .open data.sqlite
+sqlite> .tables
+comment  post     user   
+sqlite> pragma table_info(comment)
+   ...> ;
+0|comment_id|INTEGER|1||1
+1|post_id|INTEGER|1||0
+2|created_at|date|1||0
+3|user_id|TEXT|1||0
+4|text|TEXT|1||0
+5|updated_at|date|0||0
+sqlite> select * from comment;
+1|1|2022-11-17 10:22:48|2|This is Jo's contribution|
+2|1|2022-11-17 10:22:48|1|This is Mary's contribution|
+3|1|2022-11-17 21:32:50|1|This is another Mary's contribution|
+4|2|2022-11-17 21:32:50|2|This is another Jo's contribution|
+sqlite> .quit
+(venv) khouripa@localadmins-MBP data % 
