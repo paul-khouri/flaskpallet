@@ -3,8 +3,8 @@
 {% block head %}
 {{ super() }}
 {% endblock %}
+{% block heading %}Confirmation Page{% endblock %}
 {% block content%}
-<h1> Confirmation Page </h1>
 <hr>
     <form action="/deletepost/{{post_id}}" method="post" enctype=multipart/form-data>
         <div class="alert-box"> Please confirm you would like to delete {{ description }}</div>

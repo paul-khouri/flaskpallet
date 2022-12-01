@@ -3,8 +3,9 @@
 {% block head %}
 {{ super() }}
 {% endblock %}
+
+{% block heading %}Error Page{% endblock %}
 {% block content%}
-<h1> Error Page </h1>
 <hr>
    <div class="alert-box"> {{error}} </div>
 {% endblock %}

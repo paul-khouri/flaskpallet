@@ -4,8 +4,8 @@
 {{ super() }}
 
 {% endblock %}
+{% block heading %} Edit Posts Page{% endblock %}
 {% block content%}
-<h1> Edit Posts Page </h1>
         <form action="/editpost/{{post_id}}" method="post" enctype="multipart/form-data">
              <div> <label for="title">Post Title:</label> </div>
              <div> <input type="text" id="title" name="title" value="{{title}}"> </div>

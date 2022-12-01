@@ -9,12 +9,16 @@
 {% endblock %}
     </head>
     <body>
-    <div style="position: relative; padding:0; margin:0;">
+    <div class="banner-nav-container">
         <nav>
             <ul>
             <li><a href="{{ url_for('index') }}"> Home </a></li>
-                {% if session['permission'] == 0 %}
+                {% if session %}
+                {% if session['permission'] >= 0 %}
             <li><a href="{{ url_for('newpost') }}"> New Post </a></li>
+            <li><a href="{{ url_for('commentlist') }}"> Manage Comments </a></li>
+
+                {% if session['permission'] == 0  %}
             <li><a href="{{ url_for('installer') }}"> Installer </a></li>
             <li>
             <div class="drop-cover">
@@ -30,6 +34,8 @@
           </div>
             </li>
                 {% endif %}
+                {% endif %}
+                {% endif %}
             {% if session %}
             <li><a href="{{ url_for('logout') }}"> Log-Out </a></li>
             {% else %}
@@ -42,6 +48,10 @@
             <h1>{% block heading%}{% endblock %}</h1>
         </div>
 </div>
+
+
+
+
         <div class="developer-box" style="text-align:center; z-index:2;">
             {% if session %}
             <p>Session Variables</p>

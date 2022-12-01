@@ -2,6 +2,7 @@ from _datetime import datetime
 import random
 import hashlib
 import sys
+import re
 
 
 
@@ -47,6 +48,10 @@ new_string = "<p>" + my_string.replace("\n", "</p><p>") + "</p>"
 print(my_string)
 print(new_string)
 print(sys.path)
+
+list_tup=[(1,), (2,), (3,)]
+x = re.findall(r"[0-9]+", str(list_tup))
+print(x)
 
 
 

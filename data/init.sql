@@ -120,6 +120,43 @@ values(
     "Black book cover with nautilus shell spiral"
 );
 
+insert into post(title, body, user_id, created_at,image, alttext)
+values(
+"Exile and the Kingom",
+"From east to west, in fact, her gaze swept slowly, without encountering a single obstacle, along a perfect curve. "||
+"Beneath her, the blue-and-white terraces of the Arab town overlapped one another, splattered with the dark-red "||
+"spots of peppers drying in the sun. Not a soul could be seen, but from the inner courts, together with the "||
+"aroma of roasting coffee, there rose laughing voices or incomprehensible stamping of feet. Farther off, "||
+"the palm grove, divided into uneven squares by clay walls, rustled its upper foliage in a wind that could "||
+"not be felt up on the terrace. Still farther off and all the way to the horizon extended the ochre-and-grey "||
+"realm of stones, in which no life was visible. At some distance from the oasis, however, near the wadi that "||
+"bordered the palm grove on the west could be seen broad black tents. All around them a flock of motionless dromedaries, "||
+"tiny at that distance, formed against the grey ground the black signs of a strange hand-writing, the meaning of "||
+"which had to be deciphered. Above the desert, the silence was as vast as the space."|| char(10) ||
+"Janine, leaning her whole body against the parapet, was speechless, unable to tear herself away from the void opening before her. "||
+"Beside her, Marcel was getting restless. He was cold; he wanted to go back down. What was there to see here, after all? "||
+"But she could not take her gaze from the horizon. Over yonder, still farther south, at that point where sky and earth met "||
+"in a pure line - over yonder it suddenly seemed there was awaiting her something of which, though it had always been lacking, "||
+"she had never been aware until now. In the advancing afternoon the light relaxed and softened; it was passing from the crystalline to the liquid."|| char(10) ||
+"Simultaneously, in the heart of a woman brought there by pure chance a knot tightened by the years, habit, and boredom was slowly "||
+"loosening. She was looking at the nomads' encampment. She had not even seen the men living in it; nothing was stirring among the "||
+"black tents, and yet she could think only of them whose existence she had barely known until this day. Homeless, cut off "||
+"from the world, they were a handful wandering over the vast territory she could see, which however was but a paltry part "||
+"of an even greater expanse whose dizzying course stopped only thousands of miles farther south, where the first river "||
+"finally waters the forest. Since the beginning of time, on the dry earth of this limitless land scraped to the bone, a few "||
+"men had been ceaselessly trudging, possessing nothing but serving no one, poverty-stricken but free lords of a strange kingdom. "||
+"Janine did not know why this thought filled her with such a sweet, vast melancholy that it closed her eyes. She knew that this "||
+"kingdom had been eternally promised her and yet that it would never be hers, never again, except in this fleeting moment "||
+"perhaps when she opened her eyes again on the suddenly motionless sky and on its waves of steady light, while the voices "||
+"rising from the Arab town suddenly fell silent. It seemed to her that the world's course had just stopped and that, from "||
+"that moment on, no one would ever age any more or die. Everywhere, henceforth, lite was suspended - except in her heart, "||
+"where, at the same moment, someone was weeping with affliction and wonder.",
+   2,
+    datetime('now', '-19 days', '1200 minutes', '+10 seconds'),
+    "placeholder.jpg",
+    "Placeholder"
+);
+
 
 
 
@@ -137,7 +174,7 @@ insert into comment(post_id, created_at, user_id, text)
 values(
     1,
     datetime('now', '-10 days', '+820 minutes', '+0 seconds'),
-    2,
+    3,
     "This is Jo's contribution"
 );
 
@@ -145,7 +182,7 @@ insert into comment(post_id, created_at, user_id, text)
 values(
     1,
     datetime('now', '-10 days', '+820 minutes', '+0 seconds'),
-    1,
+    2,
     "This is Mary's contribution"
 );
 
@@ -153,7 +190,7 @@ insert into comment(post_id, created_at, user_id, text)
 values(
     1,
     datetime('now', '-9 days', '+50 minutes', '+2 seconds'),
-    1,
+    2,
     "This is another Mary's contribution"
 );
 
@@ -161,7 +198,7 @@ insert into comment(post_id, created_at, user_id, text)
 values(
     2,
     datetime('now', '-9 days', '+50 minutes', '+2 seconds'),
-    2,
+    3,
     "This is another Jo's contribution"
 );
 

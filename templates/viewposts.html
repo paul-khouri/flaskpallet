@@ -14,21 +14,28 @@
 </div>
 <div><img class="img-responsive" src="{{ url_for('static', filename='images/'+post[3]) }}"  alt=" {{post[4]}} "></div>
 <div>{{ new_lines_paragraph(post[1]) }}</div>
-{% if session['permission'] == 0 %}
+
+{# managing extras for logging in users #}
+{% if session %}
+{% if session['permission'] == 0 or session['id'] == post[5] %}
 <div><a href="{{ url_for('editpost', post_id=post_id) }}"><span class="btn">Edit Post</span></a>
 <a href="{{ url_for('deletepost', post_id=post_id , description = post[0]) }}"><span class="btn">Delete Post</span></a></div>
 {% endif %}
 <hr>
+{% if session['permission'] >= 0 %}
 <form action="/viewpost/{{post_id}}#comments" method="post">
   <div>
-    <label for="content">Please add a comment</label>
+    <label for="content">Hi {{ session['username']|title }}, please add a comment</label>
     <textarea id="content" name="Comment Text" rows="2"  placeholder="Your comment"></textarea> </div>
   <div class="comment-btn-container"> <input class="comment-btn" type="submit" value=""></div>
 </form>
+<hr>
+{% endif %}
+{% endif %}
 <h2 id="comments">Comments</h2>
 {%if comments%}
 {% for comment in comments %}
-<div> User Id: {{comment[0]}}</div>
+<div> User Id: {{comment[0]}}, User Name {{ comment[3]|title }}</div>
 <div>{{ new_lines_paragraph(comment[1]) }}</div>
 <div>{{ reformatSQLiteDate(comment[2]) }}</div>
 {% endfor %}

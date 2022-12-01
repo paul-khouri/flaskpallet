@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Confirmation{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block heading %}Confirmation Page{% endblock %}
+{% block content%}
+<hr>
+<style>
+    label{
+        font-family: sans-serif;
+        font-size: 1em;
+    }
+    input[type="checkbox"]{
+        height: 2em;
+        width: 2em;
+
+    }
+</style>
+ <form method="POST" action="\commentlist">
+    {% for comment in comments %}
+     <div> <input type="checkbox" id="{{ comment[0] }}" name="Comment" value="{{ comment[0] }}" > <label for="{{ comment[0] }}"> {{ comment[1] }}</label></div>
+
+    {% endfor %}
+     <div> <input class="btn" type="submit" value="Delete Comments"></div>
+ </form>
+{% endblock %}

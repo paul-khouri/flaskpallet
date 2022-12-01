@@ -77,8 +77,10 @@ def generateHTMLtable(result_tuple_list, header_tuple=()):
 
     :param (list(tuple)) result_tuple_list:
     :param (tuple_ header_tuple:
-    :return: (str) tablestaring
+    :return: (str) tablestring
     """
+    if result_tuple_list is None:
+        return "<table></table>"
     tablestring="<table><tr>"
     if len(header_tuple) >0:
         for cell in header_tuple:
@@ -189,10 +191,16 @@ def get_row_count_table(tablename,db_path):
     return result[0][0]
 
 
+
+
 if __name__ == "__main__":
     db_path = 'data/data.sqlite'
     sql_script_path = 'data/init.sql'
     print(os.path.abspath(db_path))
+    ['1', '2', '3', '4']
+
+
+
 
 
 

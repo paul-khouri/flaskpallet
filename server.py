@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, url_for, request, redirect
 from flask import render_template, session
 from markupsafe import Markup
@@ -43,8 +44,6 @@ def validate_name(name, password="a"):
     name_tuple = (name.lower().strip(),)
     print(name_tuple)
     result = run_search_query_tuples(sql, name_tuple, db_path)
-    print("In validate name")
-    print(result)
     if result:
         if result[0][1] == hashed_password:
             return result[0][0], result[0][2]
@@ -61,7 +60,7 @@ def session_check(permission):
     :return: boolean
     """
     if session:
-        if session['permission'] != permission:
+        if session['permission'] > permission:
             return False
         else:
             return True
@@ -69,8 +68,35 @@ def session_check(permission):
         return False
 
 
+def allowedpost(post_id):
+    """Check if if user is allowed to endit/delete a post
+
+    :param post_id: str
+    :return:
+    """
+    if post_id in session['ownedposts']:
+        return True
+    elif session['permission'] == 0:
+        # admin has full access
+        return True
+    else:
+        return False
+
+def update_owned_posts():
+    """Update session variable with all post-ids that
+    belong to the logged in user
+
+    :return: None
+    """
+    sql = "select post_id from post where user_id=?"
+    values_tuple = (session['id'],)
+    result = run_search_query_tuples(sql, values_tuple, db_path)
+    session['ownedposts'] = re.findall(r"[0-9]+", str(result))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global db_path
     if request.method == 'POST':
         name = request.form['username']
         password = request.form['password']
@@ -79,6 +105,8 @@ def login():
             session['username'] = name
             session['id'] = check
             session['permission'] = permission
+            update_owned_posts()
+            # if all okay, go to index
             return redirect(url_for('index'))
         else:
             return render_template('log-in.html', nameerror="Log-in name not recognised")
@@ -88,33 +116,45 @@ def login():
 
 @app.route('/logout')
 def logout():
+    # delete all session keys
     session.clear()
+    # go to index
     return redirect(url_for('index'))
 
 
 @app.route('/')
 def index():
+    # get all posts with truncated text
     sql = "select title, substr(body, 0,300), created_at, post_id, image, alttext from post order by created_at desc;"
     blog_result = run_search_query(sql, db_path)
     if blog_result:
         return render_template('index.html', posts=blog_result)
     else:
+        # if no results (None)
         return render_template('index.html')
 
 
 @app.route('/viewpost/<post_id>', methods=['GET','POST'])
 def viewpost(post_id):
     global db_path
-    sql = "select title, body, created_at, image, alttext, user_id from post where post_id= ?"
+    # get the post with the user name
+    sql = """select post.title, post.body, post.created_at, post.image, post.alttext, post.user_id, user.username from post 
+                join user on post.user_id = user.user_id
+                where post.post_id= ?"""
+
     # convert post_id str to tuple
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
     post_tuple = result[0]
+    if post_tuple is None:
+        error = "Unfortunately something has gone wrong and we cannot find the post you are looking for"
+        return render_template("error.html", error=error)
     # complete another database request for the specific post
-    sql = "select user_id, text, created_at from comment where post_id= ?"
+    sql = """select comment.user_id, comment.text, comment.created_at, user.username from comment 
+              join user on comment.user_id=user.user_id
+                  where comment.post_id= ?"""
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
-    print(result)
     if request.method == "GET":
         return render_template('viewposts.html', post_id=post_id, post=post_tuple, comments=result)
     elif request.method == "POST":
@@ -124,7 +164,7 @@ def viewpost(post_id):
         sql = """insert into comment(post_id, created_at, user_id, text) values(?,?,?,?);"""
         values_tuple = (post_id,pythondateNow_toSQLiteDate(), user_id, comment )
         run_commit_query(sql, values_tuple,db_path)
-        # re query comments with new one added
+        # re query comments with new one added -- fix so name is queried as well
         sql = "select user_id, text, created_at from comment where post_id= ?"
         values_tuple = tuple(post_id)
         result = run_search_query_tuples(sql, values_tuple, db_path)
@@ -135,7 +175,7 @@ def viewpost(post_id):
 @app.route('/deletepost/<post_id>', methods=['GET', 'POST'])
 def deletepost(post_id):
     description = request.args.get('description', None)
-    if not session_check(0):
+    if not session_check(1) or not allowedpost(post_id):
         error = "You do not have permission to view this page"
         return render_template('error.html', error=error)
     global db_path
@@ -150,12 +190,13 @@ def deletepost(post_id):
         sql="delete from post where post_id = ?"
         values_tuple = tuple(post_id)
         run_commit_query(sql, values_tuple, db_path)
+        update_owned_posts()
         return redirect(url_for('index'))
 
 # ----   edit post and new post substantial consolidating (maybe)     -------------
 @app.route('/editpost/<post_id>', methods=['GET', 'POST'])
 def editpost(post_id):
-    if not session_check(0):
+    if not session_check(1) or not allowedpost(post_id):
         error = "You do not have permission to view this page"
         return render_template('error.html', error=error)
     sql = "select title, body, created_at, image from post where post_id= ?"
@@ -206,15 +247,16 @@ def editpost(post_id):
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
-    if not session_check(0):
+    if not session_check(1):
         error = "You do not have permission to view this page"
         return render_template('error.html', error=error)
     if request.method == 'POST':
-        # collect information from form
+        # collect information from form using names in form
         title = request.form['title']
         content = request.form['content']
         f = request.files['file']
         # assess the image and feedback if problem
+        # jpeg understands jpg
         if f.content_type in ["image/jpeg", "image/png"]:
             # if okay prep query
             sql = """
@@ -225,14 +267,41 @@ def newpost():
             # prep tuple and run commit
             values_tuple = (title, content, session['id'], pythondateNow_toSQLiteDate(), f.filename, "Image alt text")
             run_commit_query(sql, values_tuple, db_path)
+            update_owned_posts()
             return redirect(url_for('index'))
         elif f.filename == "":
             error = "You have not selected an image"
         else:
             error = "Image type not recognised"
-        return render_template('newpost.html', title="Name of book...", content="Passage from book...", error=error)
+        return render_template('newpost.html', entered_title=title, entered_content=content, error=error)
     else:
         return render_template('newpost.html', title="Name of book...", content="Passage from book...")
+
+
+@app.route('/commentlist', methods=['GET','POST'])
+def commentlist():
+    global db_path
+    if session['permission'] == 0:
+        sql="select comment_id, text from comment"
+        values_tuple =()
+    else:
+        sql = "select comment_id, text from comment where user_id=?"
+        values_tuple=(session['id'],)
+    result = run_search_query_tuples(sql,values_tuple,db_path)
+    if result is None:
+        result = {}
+    if request.method == "GET":
+        return render_template("commentslist.html", comments=result)
+    elif request.method == "POST":
+        to_delete = request.form
+        nums= tuple(re.findall(r"[0-9]+", str(to_delete)))
+        values_tuple_delete = ()
+        sql_delete = "delete from comment where comment_id in {}".format(nums)
+        run_commit_query(sql_delete, values_tuple_delete, db_path)
+        result = run_search_query_tuples(sql, values_tuple, db_path)
+        if result is None:
+            result = {}
+        return render_template("commentslist.html", comments=result)
 
 # -------------- developer functions
 
