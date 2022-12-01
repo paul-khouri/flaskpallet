@@ -102,8 +102,9 @@ def index():
         return render_template('index.html')
 
 
-@app.route('/viewpost/<post_id>')
+@app.route('/viewpost/<post_id>', methods=['GET','POST'])
 def viewpost(post_id):
+    global db_path
     sql = "select title, body, created_at, image, alttext, user_id from post where post_id= ?"
     # convert post_id str to tuple
     values_tuple = tuple(post_id)
@@ -114,7 +115,21 @@ def viewpost(post_id):
     values_tuple = tuple(post_id)
     result = run_search_query_tuples(sql, values_tuple, db_path)
     print(result)
-    return render_template('viewposts.html', post_id=post_id, post=post_tuple, comments=result)
+    if request.method == "GET":
+        return render_template('viewposts.html', post_id=post_id, post=post_tuple, comments=result)
+    elif request.method == "POST":
+        # add comments to db
+        comment = request.form['Comment Text']
+        user_id = session['id']
+        sql = """insert into comment(post_id, created_at, user_id, text) values(?,?,?,?);"""
+        values_tuple = (post_id,pythondateNow_toSQLiteDate(), user_id, comment )
+        run_commit_query(sql, values_tuple,db_path)
+        # re query comments with new one added
+        sql = "select user_id, text, created_at from comment where post_id= ?"
+        values_tuple = tuple(post_id)
+        result = run_search_query_tuples(sql, values_tuple, db_path)
+        return render_template('viewposts.html', post_id=post_id, post=post_tuple, comments=result)
+
 
 
 @app.route('/deletepost/<post_id>', methods=['GET', 'POST'])

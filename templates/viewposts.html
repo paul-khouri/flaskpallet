@@ -19,7 +19,13 @@
 <a href="{{ url_for('deletepost', post_id=post_id , description = post[0]) }}"><span class="btn">Delete Post</span></a></div>
 {% endif %}
 <hr>
-<h2>Comments</h2>
+<form action="/viewpost/{{post_id}}#comments" method="post">
+  <div>
+    <label for="content">Please add a comment</label>
+    <textarea id="content" name="Comment Text" rows="2"  placeholder="Your comment"></textarea> </div>
+  <div class="comment-btn-container"> <input class="comment-btn" type="submit" value=""></div>
+</form>
+<h2 id="comments">Comments</h2>
 {%if comments%}
 {% for comment in comments %}
 <div> User Id: {{comment[0]}}</div>
